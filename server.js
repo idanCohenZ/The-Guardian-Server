@@ -3,7 +3,7 @@ const express = require("express");
 const https = require("https");
 const http = require("http");
 const cors = require("cors");
-const configuration = require("./configuration");
+const dataMining = require("./data-mining");
 
 // vars for https
 const privateKey = fs.readFileSync(__dirname + "/certs/selfsigned.key", "utf8");
@@ -19,11 +19,12 @@ app.use(cors());
 const httpServer = http.createServer(app);
 const httpsServer = https.createServer(credentials, app);
 
+// get request
 app.get("/posts/", (req, res) => {
   const code = req.query.code;
   if (code) {
     //console.log(code);
-    configuration.getPosts(code);
+    dataMining.setUpInstagram(code);
   }
 
   fs.readFile("./idan.json", "utf8", (err, data) => {

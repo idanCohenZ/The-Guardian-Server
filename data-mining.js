@@ -1,7 +1,7 @@
 const axios = require("axios");
 require("dotenv").config();
 
-const getPosts = async (token) => {
+const setUpInstagram = async (token) => {
   let code = token;
   let redirectUri = process.env.OAUTH_URI;
 
@@ -24,12 +24,13 @@ const getPosts = async (token) => {
       }
     );
 
-    // Got access token. Parse string response to JSON
+    // Got access token.
     accessToken = result.data.access_token;
 
     // console.log(accessToken);
     // console.log(userId);
 
+    // get data from user account
     result = await axios.get(
       `https://graph.instagram.com/me/media?fields=id,caption,media_type,media_url,permalink,thumbnail_url,timestamp&access_token=${accessToken}`
     );
@@ -41,5 +42,5 @@ const getPosts = async (token) => {
 };
 
 module.exports = {
-  getPosts,
+  setUpInstagram,
 };
