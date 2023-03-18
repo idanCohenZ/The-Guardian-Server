@@ -4,6 +4,7 @@ const https = require("https");
 const http = require("http");
 const cors = require("cors");
 const dataMining = require("./controllers/data-mining");
+const { getLocationFromString } = require("./parsingData/stringToLoc");
 
 // vars for https
 const privateKey = fs.readFileSync(__dirname + "/certs/selfsigned.key", "utf8");
@@ -42,5 +43,6 @@ app.get("/posts/", async (req, res) => {
 app.get("/", (req, res) => {
   console.log("hello world main");
 });
+getLocationFromString("chilling in Clei Zemer Beer Sheva");
 httpServer.listen(8000);
 httpsServer.listen(8443);
