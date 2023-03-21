@@ -1,7 +1,8 @@
-let axios = require("axios");
+require("dotenv").config();
+const axios = require("axios");
 
 function getLocationFromString(possible_location) {
-  const API_KEY = "AIzaSyDi2ANBgT4eWZ - BJh_pe9b5jsA4zPu0EY4";
+  const API_KEY = process.env.GOOGLE_API_KEY;
   const url =
     "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=" +
     possible_location +
