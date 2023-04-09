@@ -1,10 +1,12 @@
+require("@tensorflow/tfjs");
 const fs = require("fs");
 const express = require("express");
 const https = require("https");
 const http = require("http");
 const cors = require("cors");
 const dataMining = require("./controllers/data-mining");
-const { getLocationFromString } = require("./parsingData/stringToLoc");
+// const { getLocationFromString } = require("./parsingData/stringToLoc");
+// const { faceDetection } = require("./parsingData/face-detection");
 
 // vars for https
 const privateKey = fs.readFileSync(__dirname + "/certs/selfsigned.key", "utf8");
@@ -25,7 +27,6 @@ app.get("/posts/", async (req, res) => {
   const code = req.query.code;
   let userId;
   if (code) {
-    //console.log(code);
     userId = await dataMining.setUpInstagram(code);
     console.log(userId);
     res.status(200).send({ userId: userId });
@@ -40,9 +41,9 @@ app.get("/posts/", async (req, res) => {
   }
 });
 
-app.get("/", (req, res) => {
-  console.log("hello world main");
+app.get("/", async (req, res) => {
+  res.status(200).send("welcome to our project");
 });
-getLocationFromString("chilling in Clei Zemer Beer Sheva");
+// getLocationFromString("chilling in Clei Zemer Beer Sheva");
 httpServer.listen(8000);
 httpsServer.listen(8443);
