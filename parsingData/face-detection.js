@@ -4,15 +4,12 @@ const faceapi = require("@vladmandic/face-api");
 const { Canvas, Image, ImageData } = canvas;
 faceapi.env.monkeyPatch({ Canvas, Image, ImageData });
 
-const faceDetection = async () => {
+const faceDetection = async (postsArray) => {
   await faceapi.nets.ssdMobilenetv1.loadFromDisk(__dirname + "/models");
   await faceapi.nets.faceLandmark68Net.loadFromDisk(__dirname + "/models");
   await faceapi.nets.faceRecognitionNet.loadFromDisk(__dirname + "/models");
-  const img = await canvas.loadImage(__dirname + "/image1.jpg");
-  const img1 = await canvas.loadImage(__dirname + "/image2.jpg");
-  const t = [img, img1];
   // get array of single images
-  const singleFaces = await extractFaces(t);
+  const singleFaces = await extractFaces(postsArray.data);
   // search for match in different images
   let result = [];
   for (let i = 0; i < singleFaces.length; i++) {
@@ -33,7 +30,7 @@ const faceDetection = async () => {
       }
     }
   }
-  console.log(result);
+  // console.log(result);
   for (let i = 0; i < result.length; i++) {
     result[i].image = result[i].image[0].toDataURL();
   }
@@ -41,25 +38,26 @@ const faceDetection = async () => {
 };
 
 // build array of faces
-const extractFaces = async (images) => {
+const extractFaces = async (arrayOfPosts) => {
+  // console.log(arrayOfPosts);
   let imagesArray = [];
-  for (let i = 0; i < images.length; i++) {
-    const detections = await faceapi.detectAllFaces(images[i]);
-    if (detections && detections.length < 10) {
-      for (let j = 0; j < detections.length; j++) {
-        const regionsToExtract = [
-          new faceapi.Rect(
-            detections[j]._box._x,
-            detections[j]._box._y,
-            detections[j]._box._width,
-            detections[j]._box._height
-          ),
-        ];
-        let faceImages = await faceapi.extractFaces(
-          images[i],
-          regionsToExtract
-        );
-        imagesArray = [...imagesArray, { image: faceImages, status: 0 }];
+  for (let i = 0; i < arrayOfPosts.length; i++) {
+    if (arrayOfPosts[i].media_type === "IMAGE") {
+      const image = await canvas.loadImage(arrayOfPosts[i].media_url);
+      const detections = await faceapi.detectAllFaces(image);
+      if (detections && detections.length < 10) {
+        for (let j = 0; j < detections.length; j++) {
+          const regionsToExtract = [
+            new faceapi.Rect(
+              detections[j]._box._x,
+              detections[j]._box._y,
+              detections[j]._box._width,
+              detections[j]._box._height
+            ),
+          ];
+          let faceImages = await faceapi.extractFaces(image, regionsToExtract);
+          imagesArray = [...imagesArray, { image: faceImages, status: 0 }];
+        }
       }
     }
   }
@@ -73,17 +71,21 @@ const findMatchBetweenFaces = async (img1, img2) => {
     .withFaceLandmarks()
     .withFaceDescriptors();
 
-  const faceMatcher = new faceapi.FaceMatcher(facesFromImage1);
+  if (facesFromImage1[0]) {
+    const faceMatcher = new faceapi.FaceMatcher(facesFromImage1);
 
-  const facesFromImage2 = await faceapi
-    .detectAllFaces(img2)
-    .withFaceLandmarks()
-    .withFaceDescriptors();
+    const facesFromImage2 = await faceapi
+      .detectAllFaces(img2)
+      .withFaceLandmarks()
+      .withFaceDescriptors();
 
-  if (facesFromImage2[0]) {
-    const bestMatch = faceMatcher.findBestMatch(facesFromImage2[0].descriptor);
-    if (faceMatcher.labeledDescriptors[0].label === bestMatch._label) {
-      return true;
+    if (facesFromImage2[0]) {
+      const bestMatch = faceMatcher.findBestMatch(
+        facesFromImage2[0].descriptor
+      );
+      if (faceMatcher.labeledDescriptors[0].label === bestMatch._label) {
+        return true;
+      }
     }
   }
   return false;
