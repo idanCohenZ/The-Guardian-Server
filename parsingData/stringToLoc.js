@@ -1,7 +1,15 @@
 require("dotenv").config();
 const axios = require("axios");
 
-function getLocationFromString(possible_location) {
+const getLocations = (postsArray) => {
+  const locations = [];
+  for (let index = 0; index < postsArray.data.length; index++) {
+    const location = getLocationFromString(postsArray.data[index].caption);
+    locations.push(location);
+  }
+};
+
+const getLocationFromString = (possible_location) => {
   const API_KEY = process.env.GOOGLE_API_KEY;
   const url =
     "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=" +
@@ -22,6 +30,6 @@ function getLocationFromString(possible_location) {
     .catch(function (error) {
       console.log(error);
     });
-}
-
-module.exports = { getLocationFromString };
+};
+// getLocationFromString("chilling in Clei Zemer Beer Sheva");
+module.exports = { getLocations };
