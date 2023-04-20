@@ -1,9 +1,12 @@
+// Imports the Google Cloud client library
+const vision = require("@google-cloud/vision");
+
 async function labelsFromImg(postArray) {
   let categoryLableArray = [];
   //assuming i have the post array as js object!
 
-  for (let index = 0; index < postArray.length; index++) {
-    const post = postArray[index];
+  for (let index = 0; index < postArray.data.length; index++) {
+    const post = postArray.data[index];
     //
     //downloading the images as batch? => check if needed- it can read an online image!
     //
@@ -15,12 +18,9 @@ async function labelsFromImg(postArray) {
 }
 
 async function setEndpoint(postImg) {
-  // Imports the Google Cloud client library
-  const vision = require("@google-cloud/vision");
-
   // Creates a client
   const client = new vision.ImageAnnotatorClient({
-    keyFilename: `./keycred-secret.json`,
+    keyFilename: `../keycred-secret.json`,
   });
 
   const [result] = await client.labelDetection(`${postImg}`);
@@ -79,3 +79,5 @@ function combineArrays(arr1, arr2) {
   // console.log(result);
   // ['apple', 'banana', 'orange', { string: 'pear', counter: 1 }, { string: 'apple', counter: 2 }, { string: 'banana', counter: 2 }]
 }
+
+module.exports = { labelsFromImg };
