@@ -30,7 +30,7 @@ const faceDetection = async (postsArray) => {
       }
     }
   }
-  // console.log(result);
+  console.log(result);
   for (let i = 0; i < result.length; i++) {
     result[i].image = result[i].image[0].toDataURL();
   }
@@ -42,7 +42,10 @@ const extractFaces = async (arrayOfPosts) => {
   // console.log(arrayOfPosts);
   let imagesArray = [];
   for (let i = 0; i < arrayOfPosts.length; i++) {
-    if (arrayOfPosts[i].media_type === "IMAGE") {
+    if (
+      arrayOfPosts[i].media_type === "IMAGE" ||
+      arrayOfPosts[i].media_type === "CAROUSEL_ALBUM"
+    ) {
       const image = await canvas.loadImage(arrayOfPosts[i].media_url);
       const detections = await faceapi.detectAllFaces(image);
       if (detections && detections.length < 10) {

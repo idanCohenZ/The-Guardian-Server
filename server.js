@@ -5,8 +5,8 @@ const https = require("https");
 const http = require("http");
 const cors = require("cors");
 const dataMining = require("./controllers/data-mining");
-// const { getLocationFromString } = require("./parsingData/stringToLoc");
 // const { faceDetection } = require("./parsingData/face-detection");
+// const { getLocations } = require("./parsingData/stringToLoc");
 
 // vars for https
 const privateKey = fs.readFileSync(__dirname + "/certs/selfsigned.key", "utf8");
@@ -42,7 +42,19 @@ app.get("/posts/", async (req, res) => {
 });
 
 app.get("/", async (req, res) => {
-  res.status(200).send("welcome to our project");
+  // fs.readFile("./idan.json", "utf8", async (err, data) => {
+  //   if (err) console.log("error!");
+  //   if (data) {
+  //     const products = JSON.parse(data);
+  // const response = await faceDetection(products);
+  //     const response = await getLocations(products);
+  //     console.log("hello");
+  //     res.send(response);
+  //   } else {
+  //     res.send("hello");
+  //   }
+  // });
+  res.status(200).send("welcome to our server");
 });
 // getLocationFromString("chilling in Clei Zemer Beer Sheva");
 httpServer.listen(8000);
