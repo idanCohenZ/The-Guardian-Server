@@ -1,5 +1,7 @@
 // Imports the Google Cloud client library
 const vision = require("@google-cloud/vision");
+const fs = require("fs");
+const fetch = require("node-fetch");
 
 async function labelsFromImg(postArray) {
   let categoryLableArray = [];
@@ -7,14 +9,28 @@ async function labelsFromImg(postArray) {
 
   for (let index = 0; index < postArray.data.length; index++) {
     const post = postArray.data[index];
-    //
-    //downloading the images as batch? => check if needed- it can read an online image!
-    //
     postImg = post.media_url;
-    postCate = await setEndpoint(postImg);
+    await download(postImg);
+    postCate = await setEndpoint("./image.jpg");
     categoryLableArray.push(postCate);
+    if (index === postArray.data.length - 1)
+      try {
+        fs.unlinkSync("./waterfall.jpeg");
+
+        console.log("Delete File successfully.");
+      } catch (error) {
+        console.log(error);
+      }
   }
   return categoryLableArray;
+}
+
+async function download(url) {
+  const response = await fetch(url);
+  const buffer = await response.buffer();
+  fs.writeFile(`./image.jpg`, buffer, () =>
+    console.log("finished downloading!")
+  );
 }
 
 async function setEndpoint(postImg) {
