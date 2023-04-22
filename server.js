@@ -46,7 +46,7 @@ app.get("/", async (req, res) => {
   //   if (err) console.log("error!");
   //   if (data) {
   //     const products = JSON.parse(data);
-  // const response = await faceDetection(products);
+  //     const response = await faceDetection(products);
   //     const response = await getLocations(products);
   //     console.log("hello");
   //     res.send(response);
@@ -56,6 +56,6 @@ app.get("/", async (req, res) => {
   // });
   res.status(200).send("welcome to our server");
 });
-// getLocationFromString("chilling in Clei Zemer Beer Sheva");
+
 httpServer.listen(8000);
 httpsServer.listen(8443);

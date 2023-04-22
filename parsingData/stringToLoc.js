@@ -8,7 +8,10 @@ const getLocations = async (postsArray) => {
       postsArray.data[index].caption
     );
     if (location && location.candidates && location.candidates.length > 0)
-      locations.push(location.candidates);
+      locations.push({
+        location: location.candidates[0].name,
+        date: postsArray.data[index].timestamp.substring(0, 10),
+      });
   }
   return locations;
 };

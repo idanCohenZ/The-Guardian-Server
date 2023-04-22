@@ -5,6 +5,7 @@ const { Canvas, Image, ImageData } = canvas;
 faceapi.env.monkeyPatch({ Canvas, Image, ImageData });
 
 const faceDetection = async (postsArray) => {
+  // load models
   await faceapi.nets.ssdMobilenetv1.loadFromDisk(__dirname + "/models");
   await faceapi.nets.faceLandmark68Net.loadFromDisk(__dirname + "/models");
   await faceapi.nets.faceRecognitionNet.loadFromDisk(__dirname + "/models");
@@ -31,9 +32,18 @@ const faceDetection = async (postsArray) => {
     }
   }
   console.log(result);
+
+  // convert image from canvas to HTML element
   for (let i = 0; i < result.length; i++) {
     result[i].image = result[i].image[0].toDataURL();
   }
+  // sort array by freq
+  result = result.sort((f1, f2) =>
+    f1.freq < f2.freq ? 1 : f1.freq > f2.freq ? -1 : 0
+  );
+  // delete image with freq = 1
+  result = result.filter((face) => face.freq > 1);
+
   return result;
 };
 
