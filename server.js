@@ -28,7 +28,7 @@ app.get("/posts/", async (req, res) => {
   let userId;
   if (code) {
     userId = await dataMining.setUpInstagram(code);
-    console.log(userId);
+    // console.log(userId);
     res.status(200).send({ userId: userId });
   } else {
     fs.readFile("./idan.json", "utf8", (err, data) => {
