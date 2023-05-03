@@ -3,25 +3,39 @@ const vision = require("@google-cloud/vision");
 const fs = require("fs");
 const fetch = require("node-fetch");
 
-async function labelsFromImg(postArray) {
+async function labelsFromImg(products) {
+  //reads the document that returned from the DB
+  //change to the first data when doing integration
+  products = products[0].data;
+  postsArray = products[0].data;
+  let postCategories = [];
+
   let categoryLableArray = [];
-  //assuming i have the post array as js object!
-
-  for (let index = 0; index < postArray.data.length; index++) {
-    const post = postArray.data[index];
-    postImg = post.media_url;
-    await download(postImg);
-    postCate = await setEndpoint("./image.jpg");
-    categoryLableArray.push(postCate);
-    if (index === postArray.data.length - 1)
+  let semanticsCategories = [];
+  for (let index = 0; index < postsArray.length; index++) {
+    let post = postsArray[index];
+    let postImg = post.media_url;
+    console.log(post.id);
+    if (post.media_type === "CAROUSEL_ALBUM" || post.media_type === "IMAGE") {
+      await download(postImg);
       try {
-        fs.unlinkSync("./waterfall.jpeg");
-
-        console.log("Delete File successfully.");
-      } catch (error) {
-        console.log(error);
+        postCategories = await setEndpoint("./image.jpg");
+      } catch (err) {
+        console.log(err);
       }
+      categoryLableArray.push(postCategories);
+      if (index === postsArray.length - 1)
+        try {
+          fs.unlinkSync("./image.jpg");
+
+          console.log("Delete File successfully.");
+        } catch (error) {
+          console.log(error);
+        }
+    }
   }
+  categoryLableArray = crossRefrence(categoryLableArray);
+  // semanticsCategories = upperCategoryOfLabels(categoryLableArray);
   return categoryLableArray;
 }
 
@@ -36,64 +50,70 @@ async function download(url) {
 async function setEndpoint(postImg) {
   // Creates a client
   const client = new vision.ImageAnnotatorClient({
-    keyFilename: `../keycred-secret.json`,
+    keyFilename: `./keycred-secret.json`,
   });
 
-  const [result] = await client.labelDetection(`${postImg}`);
-  const labels = result.labelAnnotations;
+  let [result] = await client.labelDetection(`${postImg}`);
+  let labels = result.labelAnnotations;
 
+  let labelArray = [];
+  if (labels) {
+    for (let label of labels) {
+      labelArray.push(label.description);
+    }
+  }
+
+  return labelArray;
+}
+
+//function to cross refrence the labels and add id, and frequency to them
+function crossRefrence(labelArray) {
+  let result = {};
+  for (let i = 0; i < labelArray.length; i++) {
+    for (let j = 0; j < labelArray[i].length; j++) {
+      if (result[labelArray[i][j]]) {
+        result[labelArray[i][j]]++;
+      } else {
+        result[labelArray[i][j]] = 1;
+      }
+    }
+  }
+  let id = 0;
+  let frequencies = Object.keys(result).map((key) => ({
+    string: key,
+    frequency: result[key],
+    id: id++,
+  }));
+  return frequencies.filter((obj) => obj.frequency > 1);
+}
+
+async function upperCategoryOfLabels(labels) {
   let category_array = [];
-  labels.forEach((label) => {
-    let temp_category = semanticCategoryCreation(label.description);
+  for (let index = 0; index < labels.length; index++) {
+    const element = labels[index];
+    let st = element.string;
+    let temp_category = semanticCategoryCreation(st);
     temp_category = JSON.parse(temp_category);
     if (temp_category) {
       category_array.append(temp_category);
     }
-  });
-
-  let labelArray = [];
-  for (let label of labels) {
-    labelArray.append[label.description];
   }
 
-  let categories_from_post = combineArrays(labelArray, category_array);
-
-  return categories_from_post;
-}
-
-function combineArrays(arr1, arr2) {
-  const result = [];
-
-  // Add all strings from arr1 to the result
-  for (let str of arr1) {
-    result.push(str);
-  }
-
-  // Add objects with counters for strings in arr2
-  const counts = {};
-  for (let str of arr2) {
-    if (counts[str]) {
-      counts[str]++;
+  let result = {};
+  for (let i = 0; i < category_array.length; i++) {
+    if (result[arr[i]]) {
+      result[arr[i]]++;
     } else {
-      counts[str] = 1;
+      result[arr[i]] = 1;
     }
   }
-
-  for (let str in counts) {
-    const obj = { string: str, counter: counts[str] };
-    result.push(obj);
-  }
-
-  return result;
-
-  //results:
-  //  const arr1 = ['apple', 'banana', 'orange'];
-  // const arr2 = ['apple', 'banana', 'banana', 'pear', 'apple'];
-
-  // const result = combineArrays(arr1, arr2);
-
-  // console.log(result);
-  // ['apple', 'banana', 'orange', { string: 'pear', counter: 1 }, { string: 'apple', counter: 2 }, { string: 'banana', counter: 2 }]
+  let id = 0;
+  let frequencies = Object.keys(result).map((key) => ({
+    string: key,
+    frequency: result[key],
+    id: id++,
+  }));
+  return frequencies.filter((obj) => obj.frequency > 1);
 }
 
 module.exports = { labelsFromImg };
