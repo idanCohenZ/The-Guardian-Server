@@ -13,10 +13,12 @@ const faceDetection = async (postsArray) => {
   const singleFaces = await extractFaces(postsArray.data);
   // search for match in different images
   let result = [];
+  let id = 1;
   for (let i = 0; i < singleFaces.length; i++) {
     if (singleFaces[i].status === 0) {
       singleFaces[i].status = 1;
-      result = [...result, { image: singleFaces[i].image, freq: 1 }];
+      result = [...result, { id: id, image: singleFaces[i].image, freq: 1 }];
+      id += 1;
       for (let j = i; j < singleFaces.length; j++) {
         if (singleFaces[j].status === 0) {
           const ans = await findMatchBetweenFaces(
