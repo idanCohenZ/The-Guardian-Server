@@ -4,6 +4,9 @@ require("../db/db_connection");
 require("../db/userModel");
 const axios = require("axios");
 const User = mongoose.model("user");
+const { labelsFromImg } = require("../parsingData/labelsFromImg");
+const { faceDetection } = require("../parsingData/face-detection");
+const { getLocations } = require("../parsingData/stringToLoc");
 
 const setUpInstagram = async (token) => {
   let code = token;
@@ -51,6 +54,25 @@ const setUpInstagram = async (token) => {
   return userId;
 };
 
+async function data_Mining(userId) {
+  let postsData = User.find({ user_id: userId });
+  let posts = postsData[0].data;
+  postsData = posts[0].data;
+  const postsAmount = postsData.length;
+  const facesData = await faceDetection(posts);
+  const locationsData = await getLocations(posts);
+  //can return an array of semantic categories as well
+  const labelsData = await labelsFromImg(postsData);
+
+  const res = {};
+  res.postsAmount = postsAmount;
+  res.locationsData = locationsData;
+  res.labelsData = labelsData;
+  res.facesData = facesData;
+
+  let json = JSON.stringify(obj);
+  return json;
+}
 module.exports = {
   setUpInstagram,
 };
