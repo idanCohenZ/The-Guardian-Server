@@ -6,8 +6,7 @@ const fetch = require("node-fetch");
 async function labelsFromImg(products) {
   //reads the document that returned from the DB
   //change to the first data when doing integration
-  products = products[0].data;
-  postsArray = products[0].data;
+
   let postCategories = [];
 
   let categoryLableArray = [];
