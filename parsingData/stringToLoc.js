@@ -3,15 +3,19 @@ const axios = require("axios");
 
 const getLocations = async (postsArray) => {
   const locations = [];
+  let id = 1;
   for (let index = 0; index < postsArray.data.length; index++) {
     const location = await getLocationFromString(
       postsArray.data[index].caption
     );
-    if (location && location.candidates && location.candidates.length > 0)
+    if (location && location.candidates && location.candidates.length > 0) {
       locations.push({
+        id: id,
         location: location.candidates[0].name,
         date: postsArray.data[index].timestamp.substring(0, 10),
       });
+      id += 1;
+    }
   }
   return locations;
 };
