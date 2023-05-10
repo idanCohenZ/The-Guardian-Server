@@ -3,7 +3,7 @@ const vision = require("@google-cloud/vision");
 const fs = require("fs");
 const fetch = require("node-fetch");
 
-async function labelsFromImg(products) {
+async function labelsFromImg(postsArray) {
   //reads the document that returned from the DB
   //change to the first data when doing integration
 
@@ -14,7 +14,7 @@ async function labelsFromImg(products) {
   for (let index = 0; index < postsArray.length; index++) {
     let post = postsArray[index];
     let postImg = post.media_url;
-    console.log(post.id);
+    // console.log(post.id);
     if (post.media_type === "CAROUSEL_ALBUM" || post.media_type === "IMAGE") {
       await download(postImg);
       try {
@@ -27,7 +27,7 @@ async function labelsFromImg(products) {
         try {
           fs.unlinkSync("./image.jpg");
 
-          console.log("Delete File successfully.");
+          // console.log("Delete File successfully.");
         } catch (error) {
           console.log(error);
         }

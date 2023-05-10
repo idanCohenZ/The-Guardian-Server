@@ -54,25 +54,33 @@ const setUpInstagram = async (token) => {
   return userId;
 };
 
-async function data_Mining(userId) {
-  let postsData = User.find({ user_id: userId });
-  let posts = postsData[0].data;
-  postsData = posts[0].data;
-  const postsAmount = postsData.length;
+async function analyzeData(userId) {
+  let postsData = await getDataFromDb(userId);
+  let posts = postsData[0].data[0].data;
+
+  // build json for user
+  const postsAmount = posts.length;
   const facesData = await faceDetection(posts);
   const locationsData = await getLocations(posts);
   //can return an array of semantic categories as well
-  const labelsData = await labelsFromImg(postsData);
+  const labelsData = await labelsFromImg(posts);
 
   const res = {};
-  res.postsAmount = postsAmount;
-  res.locationsData = locationsData;
-  res.labelsData = labelsData;
-  res.facesData = facesData;
+  res.posts = postsAmount;
+  res.relatives = facesData;
+  res.locations = locationsData;
+  res.labels = labelsData;
 
-  let json = JSON.stringify(obj);
-  return json;
+  // let json = JSON.stringify(obj);
+  return res;
 }
+
+async function getDataFromDb(userId) {
+  let postsData = User.find({ user_id: userId });
+  return postsData;
+}
+
 module.exports = {
   setUpInstagram,
+  analyzeData,
 };

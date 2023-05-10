@@ -10,11 +10,16 @@ const faceDetection = async (postsArray) => {
   await faceapi.nets.faceLandmark68Net.loadFromDisk(__dirname + "/models");
   await faceapi.nets.faceRecognitionNet.loadFromDisk(__dirname + "/models");
   // get array of single images
-  const singleFaces = await extractFaces(postsArray.data);
+  let singleFaces = await extractFaces(postsArray);
+  // sort array by size of image
+  singleFaces = singleFaces.sort((f1, f2) =>
+    f1.width < f2.width ? 1 : f1.width > f2.width ? -1 : 0
+  );
   // search for match in different images
   let result = [];
   let id = 1;
   for (let i = 0; i < singleFaces.length; i++) {
+    console.log(singleFaces[i].width);
     if (singleFaces[i].status === 0) {
       singleFaces[i].status = 1;
       result = [...result, { id: id, image: singleFaces[i].image, freq: 1 }];
@@ -33,7 +38,7 @@ const faceDetection = async (postsArray) => {
       }
     }
   }
-  console.log(result);
+  // console.log(result);
 
   // convert image from canvas to HTML element
   for (let i = 0; i < result.length; i++) {
@@ -71,7 +76,10 @@ const extractFaces = async (arrayOfPosts) => {
             ),
           ];
           let faceImages = await faceapi.extractFaces(image, regionsToExtract);
-          imagesArray = [...imagesArray, { image: faceImages, status: 0 }];
+          imagesArray = [
+            ...imagesArray,
+            { image: faceImages, status: 0, width: detections[j]._box._width },
+          ];
         }
       }
     }

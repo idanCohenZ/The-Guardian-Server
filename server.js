@@ -17,6 +17,8 @@ const certificate = fs.readFileSync(
 const credentials = { key: privateKey, cert: certificate };
 
 const app = express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 const httpServer = http.createServer(app);
@@ -31,14 +33,16 @@ app.get("/posts/", async (req, res) => {
     // console.log(userId);
     res.status(200).send({ userId: userId });
   } else {
-    fs.readFile("./idan.json", "utf8", (err, data) => {
-      if (err) console.log("error!");
-      if (data) {
-        const products = JSON.parse(data);
-        res.send(products);
-      }
-    });
+    res.status(200).send("user not found");
   }
+});
+
+app.post("/analyze", async (req, res) => {
+  // console.log(req.body.userId);
+  const user_id = req.body.userId;
+  const analyzedData = await dataMining.analyzeData(user_id);
+  console.log("done");
+  res.status(200).send(analyzedData);
 });
 
 app.get("/", async (req, res) => {
