@@ -76,7 +76,7 @@ async function analyzeData(userId) {
 }
 
 async function getDataFromDb(userId) {
-  let postsData = User.find({ user_id: userId });
+  let postsData = await User.find({ user_id: userId });
   return postsData;
 }
 
