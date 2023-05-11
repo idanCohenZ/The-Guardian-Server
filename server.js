@@ -37,13 +37,13 @@ app.get("/posts/", async (req, res) => {
   }
 });
 
-app.post("/analyze", async (req, res) => {
-  // console.log(req.body.userId);
-  const user_id = req.body.userId;
-  const analyzedData = await dataMining.analyzeData(user_id);
-  console.log("done");
-  res.status(200).send(analyzedData);
-});
+// app.post("/analyze", async (req, res) => {
+//   // console.log(req.body.userId);
+//   const user_id = req.body.userId;
+//   // const analyzedData = await dataMining.analyzeData(user_id);
+//   // console.log("done");
+//   res.status(200).send(analyzedData);
+// });
 
 app.get("/", async (req, res) => {
   // fs.readFile("./idan.json", "utf8", async (err, data) => {
