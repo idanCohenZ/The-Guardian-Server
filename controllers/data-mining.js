@@ -47,10 +47,11 @@ const setUpInstagram = async (token) => {
         data: {},
         Status: "In-Progress",
       });
+      // save data with status "In-Progress"
       const saved_data = await user.save();
-      const analyzedData = dataMining.analyzeData(userId, posts_data);
 
-      // console.log(`User has been added to the database ${saved_data}`);
+      // build analyzed data
+      const analyzedData = analyzeData(userId, posts_data.data);
     } catch (error) {
       console.log(`error by creating new user ${error}`);
     }
@@ -75,21 +76,20 @@ async function analyzeData(userId, posts) {
   res.locations = locationsData;
   res.labels = labelsData;
 
+  // update object data and status to "Done"
   let updatedUser = await User.findOneAndUpdate(
     { user_id: userId },
     { data: res, Status: "Done" }
   );
-  console.log("the finished object that was saved to db is " + updatedUser);
-  // let json = JSON.stringify(obj);
   return res;
 }
 
-// async function getDataFromDb(userId) {
-//   let postsData = await User.find({ user_id: userId });
-//   return postsData;
-// }
+async function getAnalyzedDataFromDb(userId) {
+  let postsData = await User.find({ user_id: userId });
+  return postsData;
+}
 
 module.exports = {
   setUpInstagram,
-  analyzeData,
+  getAnalyzedDataFromDb,
 };

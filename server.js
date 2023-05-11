@@ -24,40 +24,26 @@ app.use(cors());
 const httpServer = http.createServer(app);
 const httpsServer = https.createServer(credentials, app);
 
-// get request
+// get request for instagram request
 app.get("/posts/", async (req, res) => {
   const code = req.query.code;
   let userId;
   if (code) {
     userId = await dataMining.setUpInstagram(code);
-    // console.log(userId);
     res.status(200).send({ userId: userId });
   } else {
     res.status(200).send("user not found");
   }
 });
 
-// app.post("/analyze", async (req, res) => {
-//   // console.log(req.body.userId);
-//   const user_id = req.body.userId;
-//   // const analyzedData = await dataMining.analyzeData(user_id);
-//   // console.log("done");
-//   res.status(200).send(analyzedData);
-// });
+// post request for client
+app.post("/analyze", async (req, res) => {
+  const user_id = req.body.userId;
+  const analyzedData = await dataMining.getAnalyzedDataFromDb(user_id);
+  res.status(200).send(analyzedData);
+});
 
 app.get("/", async (req, res) => {
-  // fs.readFile("./idan.json", "utf8", async (err, data) => {
-  //   if (err) console.log("error!");
-  //   if (data) {
-  //     const products = JSON.parse(data);
-  //     const response = await faceDetection(products);
-  //     const response = await getLocations(products);
-  //     console.log("hello");
-  //     res.send(response);
-  //   } else {
-  //     res.send("hello");
-  //   }
-  // });
   res.status(200).send("welcome to our server");
 });
 
