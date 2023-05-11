@@ -42,8 +42,14 @@ const setUpInstagram = async (token) => {
     const posts_data = result.data;
     if (!posts_data) return console.log("No valid data found ");
     try {
-      const user = new User({ user_id: userId, data: posts_data });
+      const user = new User({
+        user_id: userId,
+        data: {},
+        Status: "In-Progress",
+      });
       const saved_data = await user.save();
+      const analyzedData = dataMining.analyzeData(userId, posts_data);
+
       // console.log(`User has been added to the database ${saved_data}`);
     } catch (error) {
       console.log(`error by creating new user ${error}`);
@@ -51,13 +57,11 @@ const setUpInstagram = async (token) => {
   } catch (e) {
     console.log("Error=====", e);
   }
+
   return userId;
 };
 
-async function analyzeData(userId) {
-  let postsData = await getDataFromDb(userId);
-  let posts = postsData[0].data[0].data;
-
+async function analyzeData(userId, posts) {
   // build json for user
   const postsAmount = posts.length;
   const facesData = await faceDetection(posts);
@@ -71,14 +75,19 @@ async function analyzeData(userId) {
   res.locations = locationsData;
   res.labels = labelsData;
 
+  let updatedUser = await User.findOneAndUpdate(
+    { user_id: userId },
+    { data: res, Status: "Done" }
+  );
+  console.log("the finished object that was saved to db is " + updatedUser);
   // let json = JSON.stringify(obj);
   return res;
 }
 
-async function getDataFromDb(userId) {
-  let postsData = await User.find({ user_id: userId });
-  return postsData;
-}
+// async function getDataFromDb(userId) {
+//   let postsData = await User.find({ user_id: userId });
+//   return postsData;
+// }
 
 module.exports = {
   setUpInstagram,
