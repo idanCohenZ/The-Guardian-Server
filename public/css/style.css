@@ -1,0 +1,42 @@
+@import url("https://fonts.googleapis.com/css2?family=Courgette&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cuprum&display=swap");
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+h2 {
+  font-size: 30px;
+  font-family: "Courgette", cursive;
+}
+
+p {
+  font-size: 20px;
+  font-weight: bold;
+  font-family: "Cuprum", sans-serif;
+}
+
+img {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+}
+
+.box-container {
+  background-color: rgb(182, 239, 171);
+  display: flex;
+  flex-direction: column;
+  margin-top: 10%;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  width: 400px;
+  height: 200px;
+  z-index: 1;
+  border-radius: 20px;
+}

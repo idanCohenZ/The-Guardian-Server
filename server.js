@@ -19,7 +19,10 @@ const credentials = { key: privateKey, cert: certificate };
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+// app.use(express.static("public"));
 app.use(cors());
+
+// app.set("view-engine", "ejs");
 
 const httpServer = http.createServer(app);
 const httpsServer = https.createServer(credentials, app);
@@ -31,6 +34,7 @@ app.get("/posts/", async (req, res) => {
   if (code) {
     userId = await dataMining.setUpInstagram(code);
     res.status(200).send({ userId: userId });
+    // res.render("user-found", { userId: userId });
   } else {
     res.status(200).send("user not found");
   }

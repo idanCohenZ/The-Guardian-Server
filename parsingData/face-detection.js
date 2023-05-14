@@ -9,6 +9,7 @@ const faceDetection = async (postsArray) => {
   await faceapi.nets.ssdMobilenetv1.loadFromDisk(__dirname + "/models");
   await faceapi.nets.faceLandmark68Net.loadFromDisk(__dirname + "/models");
   await faceapi.nets.faceRecognitionNet.loadFromDisk(__dirname + "/models");
+
   // get array of single images
   let singleFaces = await extractFaces(postsArray);
   // sort array by size of image
@@ -49,7 +50,7 @@ const faceDetection = async (postsArray) => {
     f1.freq < f2.freq ? 1 : f1.freq > f2.freq ? -1 : 0
   );
   // delete image with freq = 1
-  result = result.filter((face) => face.freq > 1);
+  // result = result.filter((face) => face.freq > 1);
 
   return result;
 };
@@ -65,6 +66,8 @@ const extractFaces = async (arrayOfPosts) => {
     ) {
       const image = await canvas.loadImage(arrayOfPosts[i].media_url);
       const detections = await faceapi.detectAllFaces(image);
+
+      // console.log(detections[0].alignedRect._box);
       if (detections && detections.length < 10) {
         for (let j = 0; j < detections.length; j++) {
           const regionsToExtract = [
@@ -78,7 +81,11 @@ const extractFaces = async (arrayOfPosts) => {
           let faceImages = await faceapi.extractFaces(image, regionsToExtract);
           imagesArray = [
             ...imagesArray,
-            { image: faceImages, status: 0, width: detections[j]._box._width },
+            {
+              image: faceImages,
+              status: 0,
+              width: detections[j]._box._width,
+            },
           ];
         }
       }
@@ -90,22 +97,22 @@ const extractFaces = async (arrayOfPosts) => {
 // find match between faces
 const findMatchBetweenFaces = async (img1, img2) => {
   const facesFromImage1 = await faceapi
-    .detectAllFaces(img1)
+    .detectSingleFace(img1)
     .withFaceLandmarks()
-    .withFaceDescriptors();
+    .withFaceDescriptor();
 
-  if (facesFromImage1[0]) {
+  const facesFromImage2 = await faceapi
+    .detectSingleFace(img2)
+    .withFaceLandmarks()
+    .withFaceDescriptor();
+
+  if (facesFromImage1) {
     const faceMatcher = new faceapi.FaceMatcher(facesFromImage1);
 
-    const facesFromImage2 = await faceapi
-      .detectAllFaces(img2)
-      .withFaceLandmarks()
-      .withFaceDescriptors();
+    // console.log(facesFromImage2);
 
-    if (facesFromImage2[0]) {
-      const bestMatch = faceMatcher.findBestMatch(
-        facesFromImage2[0].descriptor
-      );
+    if (facesFromImage2) {
+      const bestMatch = faceMatcher.findBestMatch(facesFromImage2.descriptor);
       if (faceMatcher.labeledDescriptors[0].label === bestMatch._label) {
         return true;
       }
