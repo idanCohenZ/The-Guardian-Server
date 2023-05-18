@@ -50,7 +50,7 @@ const faceDetection = async (postsArray) => {
     f1.freq < f2.freq ? 1 : f1.freq > f2.freq ? -1 : 0
   );
   // delete image with freq = 1
-  // result = result.filter((face) => face.freq > 1);
+  result = result.filter((face) => face.freq > 1);
 
   return result;
 };
@@ -72,10 +72,10 @@ const extractFaces = async (arrayOfPosts) => {
         for (let j = 0; j < detections.length; j++) {
           const regionsToExtract = [
             new faceapi.Rect(
-              detections[j]._box._x,
-              detections[j]._box._y,
-              detections[j]._box._width,
-              detections[j]._box._height
+              detections[j]._box._x - 25,
+              detections[j]._box._y - 40,
+              detections[j]._box._width + 50,
+              detections[j]._box._height + 80
             ),
           ];
           let faceImages = await faceapi.extractFaces(image, regionsToExtract);
@@ -84,7 +84,7 @@ const extractFaces = async (arrayOfPosts) => {
             {
               image: faceImages,
               status: 0,
-              width: detections[j]._box._width,
+              width: detections[j]._box._width + 50,
             },
           ];
         }

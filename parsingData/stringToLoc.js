@@ -7,12 +7,14 @@ const getLocations = async (postsArray) => {
   for (let index = 0; index < postsArray.length; index++) {
     const location = await getLocationFromString(postsArray[index].caption);
     if (location && location.candidates && location.candidates.length > 0) {
-      locations.push({
-        id: id,
-        location: location.candidates[0].name,
-        date: postsArray[index].timestamp.substring(0, 10),
-      });
-      id += 1;
+      if (location.candidates[0].name.indexOf("undefined") === -1) {
+        locations.push({
+          id: id,
+          location: location.candidates[0].name,
+          date: postsArray[index].timestamp.substring(0, 10),
+        });
+        id += 1;
+      }
     }
   }
   return locations;
