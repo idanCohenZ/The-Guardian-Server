@@ -67,7 +67,6 @@ async function analyzeData(userId, posts) {
   const postsAmount = posts.length;
   const facesData = await faceDetection(posts);
   const locationsData = await getLocations(posts);
-  //can return an array of semantic categories as well
   const labelsData = await labelsFromImg(posts);
 
   const res = {};

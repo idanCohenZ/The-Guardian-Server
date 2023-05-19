@@ -5,8 +5,6 @@ const https = require("https");
 const http = require("http");
 const cors = require("cors");
 const dataMining = require("./controllers/data-mining");
-// const { faceDetection } = require("./parsingData/face-detection");
-// const { getLocations } = require("./parsingData/stringToLoc");
 
 // vars for https
 const privateKey = fs.readFileSync(__dirname + "/certs/selfsigned.key", "utf8");

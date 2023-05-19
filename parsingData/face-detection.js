@@ -20,7 +20,7 @@ const faceDetection = async (postsArray) => {
   let result = [];
   let id = 1;
   for (let i = 0; i < singleFaces.length; i++) {
-    console.log(singleFaces[i].width);
+    console.log(`size of current image: ${singleFaces[i].width}`);
     if (singleFaces[i].status === 0) {
       singleFaces[i].status = 1;
       result = [...result, { id: id, image: singleFaces[i].image, freq: 1 }];
@@ -39,7 +39,6 @@ const faceDetection = async (postsArray) => {
       }
     }
   }
-  // console.log(result);
 
   // convert image from canvas to HTML element
   for (let i = 0; i < result.length; i++) {
@@ -57,7 +56,6 @@ const faceDetection = async (postsArray) => {
 
 // build array of faces
 const extractFaces = async (arrayOfPosts) => {
-  // console.log(arrayOfPosts);
   let imagesArray = [];
   for (let i = 0; i < arrayOfPosts.length; i++) {
     if (
@@ -67,7 +65,6 @@ const extractFaces = async (arrayOfPosts) => {
       const image = await canvas.loadImage(arrayOfPosts[i].media_url);
       const detections = await faceapi.detectAllFaces(image);
 
-      // console.log(detections[0].alignedRect._box);
       if (detections && detections.length < 10) {
         for (let j = 0; j < detections.length; j++) {
           const regionsToExtract = [
@@ -108,8 +105,6 @@ const findMatchBetweenFaces = async (img1, img2) => {
 
   if (facesFromImage1) {
     const faceMatcher = new faceapi.FaceMatcher(facesFromImage1);
-
-    // console.log(facesFromImage2);
 
     if (facesFromImage2) {
       const bestMatch = faceMatcher.findBestMatch(facesFromImage2.descriptor);
