@@ -49,7 +49,7 @@ const faceDetection = async (postsArray) => {
     f1.freq < f2.freq ? 1 : f1.freq > f2.freq ? -1 : 0
   );
   // delete image with freq = 1
-  // result = result.filter((face) => face.freq > 1);
+  result = result.filter((face) => face.freq > 1);
 
   return result;
 };
