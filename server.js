@@ -4,7 +4,7 @@ const express = require("express");
 const https = require("https");
 const http = require("http");
 const cors = require("cors");
-const dataMining = require("./controllers/data-mining");
+const dataMining = require("./src/controllers/data-mining");
 
 // vars for https
 const privateKey = fs.readFileSync(__dirname + "/certs/selfsigned.key", "utf8");
@@ -45,7 +45,7 @@ app.post("/analyze", async (req, res) => {
   res.status(200).send(analyzedData);
 });
 
-app.get("/", async (req, res) => {
+app.get("/", (req, res) => {
   res.status(200).send("welcome to our server");
 });
 

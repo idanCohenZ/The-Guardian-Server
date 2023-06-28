@@ -139,7 +139,7 @@ async function download(url) {
 async function setEndpoint(postImg) {
   // Creates a client
   const client = new vision.ImageAnnotatorClient({
-    keyFilename: `./keycred-secret.json`,
+    keyFilename: `./certs/keycred-secret.json`,
   });
 
   let [result] = await client.labelDetection(`${postImg}`);
