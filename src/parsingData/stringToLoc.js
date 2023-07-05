@@ -22,7 +22,6 @@ const getLocations = async (postsArray) => {
 
 const getLocationFromString = async (possible_location) => {
   const API_KEY = process.env.GOOGLE_API_KEY;
-  // console.log(API_KEY);
   const url =
     "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=" +
     possible_location +
@@ -37,5 +36,5 @@ const getLocationFromString = async (possible_location) => {
   const response = await axios(config);
   return response.data;
 };
-// getLocationFromString("chilling in Clei Zemer Beer Sheva");
+
 module.exports = { getLocations };

@@ -26,26 +26,33 @@ const httpServer = http.createServer(app);
 const httpsServer = https.createServer(credentials, app);
 
 // get request for instagram request
-app.get("/posts/", async (req, res) => {
-  const code = req.query.code;
-  let userId;
-  if (code) {
-    userId = await dataMining.setUpInstagram(code);
-    // res.status(200).send({ userId: userId });
-    res.render("user-found", { userId: userId });
-  } else {
-    res.status(200).send("user not found");
+app.get("/posts/", async (req, res, next) => {
+  try {
+    const code = req.query.code;
+    let userId;
+    if (code) {
+      userId = await dataMining.setUpInstagram(code);
+      res.render("user-found", { userId: userId });
+    } else {
+      res.status(200).send("user not found");
+    }
+  } catch (err) {
+    next(err);
   }
 });
 
 // post request for client
-app.post("/analyze", async (req, res) => {
-  const user_id = req.body.userId;
-  const analyzedData = await dataMining.getAnalyzedDataFromDb(user_id);
-  res.status(200).send(analyzedData);
+app.post("/analyze", async (req, res, next) => {
+  try {
+    const user_id = req.body.userId;
+    const analyzedData = await dataMining.getAnalyzedDataFromDb(user_id);
+    res.status(200).send(analyzedData);
+  } catch (err) {
+    next(err);
+  }
 });
 
-app.get("/", (req, res) => {
+app.get("/", (req, res, next) => {
   res.status(200).send("welcome to our server");
 });
 
