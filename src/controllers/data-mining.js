@@ -85,7 +85,14 @@ async function analyzeData(userId, posts) {
 
 async function getAnalyzedDataFromDb(userId) {
   let postsData = await User.find({ user_id: userId });
-  return postsData;
+  if (postsData.length != 0 && postsData[0].Status === "Done") {
+    await User.findOneAndDelete({ user_id: userId });
+    return postsData;
+  } else if (postsData.length != 0 && postsData[0].Status === "In-Progress") {
+    return [{ Status: "In-Progress" }];
+  } else {
+    return [{ Status: "not-found" }];
+  }
 }
 
 module.exports = {
