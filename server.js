@@ -4,7 +4,7 @@ const express = require("express");
 const https = require("https");
 const http = require("http");
 const cors = require("cors");
-const dataMining = require("./src/controllers/data-mining");
+const controllers = require("./src/controllers/user-controllers");
 
 // vars for https
 const privateKey = fs.readFileSync(__dirname + "/certs/selfsigned.key", "utf8");
@@ -31,7 +31,7 @@ app.get("/posts/", async (req, res, next) => {
     const code = req.query.code;
     let userId;
     if (code) {
-      userId = await dataMining.setUpInstagram(code);
+      userId = await controllers.setUpData(code);
       res.render("user-found", { userId: userId });
     } else {
       res.status(200).send("user not found");
@@ -45,7 +45,7 @@ app.get("/posts/", async (req, res, next) => {
 app.post("/analyze", async (req, res, next) => {
   try {
     const user_id = req.body.userId;
-    const analyzedData = await dataMining.getAnalyzedDataFromDb(user_id);
+    const analyzedData = await controllers.getAnalyzedDataFromDb(user_id);
     res.status(200).send(analyzedData);
   } catch (err) {
     next(err);
