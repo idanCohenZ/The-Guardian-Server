@@ -36,13 +36,19 @@ async function analyzeData(userId, posts) {
   const postsAmount = posts.length;
   const facesData = await faceDetection(posts);
   const locationsData = await getLocations(posts);
-  const labelsData = await labelsFromImg(posts);
+  //the labels from img returns an array with both labels data and freq and category array
+  const visionData = await labelsFromImg(posts);
+  const labelsData = visionData[0];
+  const categoryData = visionData[1]; // is an array of objects - category, and the number of lables assigned to it
+
+  console.log("the category data is " + JSON.stringify(categoryData, null, 2));
 
   const res = {};
   res.posts = postsAmount;
   res.relatives = facesData;
   res.locations = locationsData;
   res.labels = labelsData;
+  res.categoryData = categoryData; //will this create a problem with schema?
 
   // update object data and status to "Done"
   await User.findOneAndUpdate(

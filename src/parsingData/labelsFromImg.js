@@ -34,8 +34,8 @@ async function labelsFromImg(postsArray) {
   semanticsCategories = await semanticCategoryCreationForArray(
     categoryLableArray
   );
-  console.log("the total categories for sematics are: " + semanticsCategories);
-  return categoryLableArray;
+
+  return [categoryLableArray, semanticsCategories];
 }
 
 async function download(url) {

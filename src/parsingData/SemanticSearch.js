@@ -1,4 +1,3 @@
-//new version - my version 20.07.23
 let natural = require("natural");
 const fs = require("fs");
 
@@ -16,17 +15,21 @@ async function semanticCategoryCreationForArray(labelArrayObjects) {
     console.log(
       "The category for: " + element.string + " is :" + categoryResult
     );
-
-    if (categoryResult && !category_array.includes(categoryResult)) {
-      category_array.push(categoryResult);
+    let existingIndex = findIndexByValueInArray(category_array, categoryResult);
+    if (categoryResult && existingIndex === -1) {
+      let obj = {};
+      obj.str = categoryResult;
+      obj.labelCount = 0;
+      category_array.push(obj);
+    } else if (existingIndex !== -1) {
+      category_array[existingIndex].labelCount++;
     }
   }
 
-  console.log(
-    "finished semanticCategoryCreationForArray, the array of categories is: " +
-      category_array
-  );
   return category_array;
+}
+function findIndexByValueInArray(array, searchValue) {
+  return array.findIndex((obj) => obj.str === searchValue);
 }
 
 async function semanticCategoryCreation(label, Wordsclassifier) {
@@ -76,4 +79,5 @@ async function trainClassifier(Wordsclassifier) {
 
   await Wordsclassifier.train();
 }
+
 module.exports = semanticCategoryCreationForArray;
