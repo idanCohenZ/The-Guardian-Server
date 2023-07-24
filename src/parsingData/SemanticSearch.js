@@ -12,9 +12,7 @@ async function semanticCategoryCreationForArray(labelArrayObjects) {
       element.string,
       Wordsclassifier
     );
-    console.log(
-      "The category for: " + element.string + " is :" + categoryResult
-    );
+
     let existingIndex = findIndexByValueInArray(category_array, categoryResult);
     if (categoryResult && existingIndex === -1) {
       let obj = {};
@@ -28,6 +26,7 @@ async function semanticCategoryCreationForArray(labelArrayObjects) {
 
   return category_array;
 }
+
 function findIndexByValueInArray(array, searchValue) {
   return array.findIndex((obj) => obj.str === searchValue);
 }
